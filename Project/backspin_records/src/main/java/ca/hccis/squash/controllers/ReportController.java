@@ -4,6 +4,9 @@ import ca.hccis.squash.bo.SkillsAssessmentSquashTechnicalBO;
 import ca.hccis.squash.dao.SkillsAssessmentSquashTechnicalDAO;
 import ca.hccis.squash.entity.ReportSquash;
 import ca.hccis.squash.jpa.entity.SkillsAssessmentSquashTechnical;
+import ca.hccis.squash.bo.VinylListingBO;
+import ca.hccis.squash.entity.ReportVinyl;
+import ca.hccis.squash.jpa.entity.VinylListing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -12,6 +15,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import jakarta.servlet.http.HttpSession;
+
 import java.util.ArrayList;
 
 /**
@@ -54,7 +58,7 @@ public class ReportController {
     @RequestMapping("/squash/name")
     public String reportSquashName(Model model) {
         logger.info("Running the reports controller squash name method");
-        model.addAttribute("reportInput",new ReportSquash());
+        model.addAttribute("reportInput", new ReportSquash());
         return "report/reportSquashName";
     }
 
@@ -69,7 +73,7 @@ public class ReportController {
     @RequestMapping("/squash/score")
     public String reportSquashScore(Model model) {
         logger.info("Running the reports controller squash score method");
-        model.addAttribute("reportInput",new ReportSquash());
+        model.addAttribute("reportInput", new ReportSquash());
         return "report/reportSquashScore";
     }
 
@@ -86,7 +90,7 @@ public class ReportController {
     @RequestMapping("/squash/name/submit")
     public String reportSquashNameSubmit(Model model, @ModelAttribute("reportInput") ReportSquash reportSquash) {
 
-        System.out.println("Name from input form:"+reportSquash.getName());
+        System.out.println("Name from input form:" + reportSquash.getName());
 
         //Write some model code to go to the db and get the appropriate assessments
         //Add them to a collection in the ReportSquash class
@@ -118,7 +122,7 @@ public class ReportController {
     @RequestMapping("/squash/score/submit")
     public String reportSquashScoreSubmit(Model model, @ModelAttribute("reportInput") ReportSquash reportSquash) {
 
-        System.out.println("Min from input form:"+reportSquash.getMinScore());
+        System.out.println("Min from input form:" + reportSquash.getMinScore());
 
         //Write some model code to go to the db and get the appropriate assessments
         //Add them to a collection in the ReportSquash class
@@ -138,5 +142,46 @@ public class ReportController {
         return "report/reportSquashScore"; //Send user to another view.
     }
 
+    /**
+     * Send the user to the seller name report input view.
+     *
+     * @param model
+     * @return view for the seller name report
+     * @author Misha
+     * @since 20261002
+     */
+    @RequestMapping("/vinyl/seller")
+    public String reportVinylSeller(Model model) {
+        logger.info("Running the reports controller vinyl seller method");
+        model.addAttribute("reportInput", new ReportVinyl());
+        return "report/reportVinylSeller";
+    }
 
+    /**
+     * Process the seller name report.
+     *
+     * @param model
+     * @param reportVinyl Object containing the inputs for the report
+     * @return view to show the report results
+     * @author Misha
+     * @since 20261002
+     */
+    @RequestMapping("/vinyl/seller/submit")
+    public String reportVinylSellerSubmit(Model model, @ModelAttribute("reportInput") ReportVinyl reportVinyl) {
+
+        //Run the report using jdbc and write the results to a file
+        VinylListingBO vinylListingBO = new VinylListingBO();
+        ArrayList<VinylListing> listings = vinylListingBO.processSelectAllBySellerName(reportVinyl.getSellerName());
+        reportVinyl.setVinylListings(listings);
+
+        //Add a message in case the report does not contain any data
+        if (listings.isEmpty()) {
+            model.addAttribute("message", "No vinyl listings found for that seller");
+        }
+
+        //Put object in model so it can be used on the view (html)
+        model.addAttribute("reportInput", reportVinyl);
+
+        return "report/reportVinylSeller";
+    }
 }

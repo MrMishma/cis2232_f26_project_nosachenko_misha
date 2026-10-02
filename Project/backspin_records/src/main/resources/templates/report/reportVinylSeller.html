@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head">
+    <title id="pageTitle">Seller Name Report</title>
+</head>
+<body>
+<nav th:replace="fragments/navHeader :: navbar"></nav>
+
+<div class="container has-text-centered">
+    <h2 class="title is-2" th:text="#{label.report.seller.name}">Seller Name Report</h2>
+
+    <!-- Input form: user enters a full or partial seller name -->
+    <form th:action="@{/report/vinyl/seller/submit}" method="post" class="wbb"
+          style="display:inline-block;text-align:left!important">
+        <label>Seller Name: </label>
+        <input type="text" th:field="${reportInput.sellerName}"/>
+        <button style="display:block;margin-top:24px!important" class="centered">Submit</button>
+    </form>
+
+    <!-- Message shown when no listings are found -->
+    <p th:if="${not #strings.isEmpty(message)}" th:text="${message}" class="error">not found</p>
+
+    <!-- Report results -->
+    <table class="wbb centered" th:if="${not #lists.isEmpty(reportInput.vinylListings)}">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Record Name</th>
+            <th>Seller Name</th>
+            <th>Release Year</th>
+            <th>Genre</th>
+            <th>Colour</th>
+            <th>Size</th>
+            <th>Condition</th>
+            <th>Price</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="item : ${reportInput.vinylListings}">
+            <td th:text="${item.id}"></td>
+            <td th:text="${item.recordName}"></td>
+            <td th:text="${item.sellerName}"></td>
+            <td th:text="${item.releaseYear}"></td>
+            <td th:text="${item.vinylGenre}"></td>
+            <td th:text="${item.vinylColour}"></td>
+            <td th:text="${item.recordSize}"></td>
+            <td th:text="${item.vinylIsSealed} ? 'Sealed' : 'Used'"></td>
+            <td th:text="'$' + ${#numbers.formatDecimal(item.vinylPrice, 1, 2)}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<br/>
+<footer th:replace="fragments/footer :: footer"></footer>
+</body>
+</html>
