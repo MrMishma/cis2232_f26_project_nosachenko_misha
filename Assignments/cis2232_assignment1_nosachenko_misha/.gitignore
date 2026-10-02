@@ -1,6 +1,0 @@
-target/
-out/
-.idea/
-*.iml
-data/
-orders.json
