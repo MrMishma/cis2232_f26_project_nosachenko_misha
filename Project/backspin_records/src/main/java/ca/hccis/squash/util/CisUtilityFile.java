@@ -10,11 +10,11 @@ import java.util.ArrayList;
 
 public class CisUtilityFile {
 
-    public static final String FOLDER_NAME = "c:\\CIS2232\\";
+    public static final String FOLDER_NAME = "c:\\cis2232\\";
 
-    public static void writeReportToFile(String fileName, ArrayList theObjects) {
+    public static void writeReportToFile(String fileName, ArrayList<?> theObjects) {
 
-        String fullName = FOLDER_NAME + fileName + CisUtility.getCurrentDate("_yyyyMMddhhmmss") + ".txt";
+        String fullName = FOLDER_NAME + fileName + CisUtility.getCurrentDate("yyyyMMddHHmm") + ".txt";
         Path path = Paths.get(FOLDER_NAME);
         try {
             Files.createDirectories(path);
@@ -34,7 +34,10 @@ public class CisUtilityFile {
             System.out.println("CisUtilityFile exception with file: " + fullName);
         } finally {
             try {
-                writer.close();
+                //Only close the writer if it was opened (it is null if the file could not be created)
+                if (writer != null) {
+                    writer.close();
+                }
             } catch (IOException e) {
                 System.out.println("CisUtilityFile exception with file: " + fullName);
             }

@@ -49,6 +49,40 @@
         </tr>
         </tbody>
     </table>
+
+    <!--Chart of the total listing value by genre for the matching seller -->
+    <div th:if="${not #lists.isEmpty(reportInput.vinylListings)}"
+         style="width:600px;height:350px;margin:24px auto;">
+        <canvas id="genreChart"></canvas>
+    </div>
+
+    <script th:inline="javascript" th:if="${not #lists.isEmpty(reportInput.vinylListings)}">
+        const listings = [[${reportInput.vinylListings}]];
+
+        //Add up the price of the listings for each genre
+        const totalsByGenre = listings.reduce((totals, item) => {
+            totals[item.vinylGenre] = (totals[item.vinylGenre] || 0) + item.vinylPrice;
+            return totals;
+        }, {});
+
+        new Chart(document.getElementById('genreChart'), {
+            type: 'bar',
+            data: {
+                labels: Object.keys(totalsByGenre),
+                datasets: [{
+                    label: 'Total listing value ($)',
+                    data: Object.values(totalsByGenre),
+                    backgroundColor: '#A37774',
+                    borderColor: '#484A47',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+    </script>
 </div>
 
 <br/>
