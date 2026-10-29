@@ -59,6 +59,26 @@ Example:  A sealed, white, twelve-inch record = 10.00 x 2.00 x 2.00 x 4.00 = 160
 
 ## Report Details ##
 
-### Seller name report ###
+### Seller Name Report ###
 
-(To be confirmed by BA)  Enter a seller name and the report will return any listings that have that name 'like' the seller name.
+**Use Case:** Lets staff see every record a seller has listed, and what those listings are worth by genre.
+
+**Input:**
+* Seller name (full or partial, not case sensitive). Leaving it blank returns all listings.
+
+**Processing:**
+* A JDBC DAO selects all vinyl_listing rows where sellerName is LIKE the input, sorted by record name.
+
+**Output (screen):**
+* A table showing ID, Record Name, Seller Name, Release Year, Genre, Colour, Size, Condition (Sealed/Used) and Price
+* A bar chart of the total listing value for each genre
+* The message "No vinyl listings found for that seller" when there are no matches
+
+**Output (file):**
+* Saved to c:\cis2232\SellerNameReport<yyyyMMddHHmm>.txt (example: SellerNameReport202610251537.txt)
+* One line per listing
+
+**Test data:**
+* "crate" returns Back in Black, Blue Train and Kind of Blue (chart: Jazz $138.00, Rock $46.00)
+* "spin" returns Discovery, Random Access Memories and Thriller (chart: Electronic $253.00, Pop $69.00)
+* "zzz" returns no results and shows the message
