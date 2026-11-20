@@ -82,3 +82,62 @@ Example:  A sealed, white, twelve-inch record = 10.00 x 2.00 x 2.00 x 4.00 = 160
 * "crate" returns Back in Black, Blue Train and Kind of Blue (chart: Jazz $138.00, Rock $46.00)
 * "spin" returns Discovery, Random Access Memories and Thriller (chart: Electronic $253.00, Pop $69.00)
 * "zzz" returns no results and shows the message
+
+## Sprint 3 - Vinyl Listing Maintenance (CRUD) ##
+
+**Use Case:** Lets staff add, view, update and delete vinyl listings.  The price is calculated automatically every time a listing is saved.
+
+**Navigation:**
+* Vinyl Listings > View Listings  (/vinyllisting)
+* Vinyl Listings > Add Listing  (/vinyllisting/add)
+* Edit and Delete buttons are on each row of the list  (/vinyllisting/edit/{id} and /vinyllisting/delete/{id})
+
+**Processing:**
+* Spring Data JPA is used for all database access (VinylListingRepository extends CrudRepository).
+* List uses findAll(), Edit uses findById(), Delete uses existsById() and deleteById().
+* Add and Update both use save():  a new listing (no id) is inserted, an existing listing (has an id) is updated.
+* The price is calculated in VinylListingBO.calculateVinylPrice() before saving (see Calculation above).
+* The created date/time is set automatically when a new listing is added and is kept when a listing is edited.
+* Delete asks for confirmation before removing the listing.
+
+**Validation (add and update):**
+* Record Name:  required, maximum 100 characters
+* Seller Name:  required, maximum 50 characters
+* Release Year:  required, between 1948 and 2026
+* Genre:  required, must be Country, Pop, Rock, Jazz or Electronic
+* Colour:  required, must be Black, Red or White
+* Size:  required, must be Seven-inch, Ten-inch or Twelve-inch
+* Condition:  required, Sealed or Used
+* Price and created date are not entered by the user (calculated / set by the application)
+* When validation fails, the form is shown again with the user's values and a message under each field with an error.  Nothing is saved.
+
+**Test data:**
+
+Before testing, run createDatabase.sql to load the 8 sample listings.
+
+List:
+* Vinyl Listings > View Listings shows all 8 sample listings with their prices (example: Kind of Blue - Jazz, Black, Twelve-inch, Sealed - $92.00)
+
+Add:
+* Add a Jazz, Black, Twelve-inch, Sealed record - price is $92.00 and today's date is shown as Created
+* Add a Pop, White, Seven-inch, Used record - price is $23.00
+* Add a Rock, Red, Ten-inch, Sealed record - price is $69.00
+
+Update:
+* Edit the Jazz record added above and change it to Used - price changes to $46.00, the id and Created date stay the same and no new row is added
+* Edit the same record and change the size to Seven-inch - price changes to $11.50
+
+Delete:
+* Click Delete on a listing and choose Cancel - nothing is removed
+* Click Delete on a listing and choose OK - the listing is removed and "Listing X deleted" is shown
+* Go to /vinyllisting/delete/999 - "Listing 999 was not found" is shown
+
+Validation:
+* Submit the Add form with every field empty - error messages are shown for Record Name, Seller Name, Release Year, Genre, Colour and Size, and nothing is saved
+* Enter only spaces for Record Name - "Record name is required"
+* Enter 2099 for Release Year - "Release year cannot be in the future"
+* Enter 1900 for Release Year - "Release year must be 1948 or later"
+* Edit a listing, clear the Seller Name and submit - the error is shown and the page still says Edit Vinyl Listing; fix it and submit - the listing is updated (not duplicated)
+
+Reports:
+* After adding a listing, the Seller Name Report finds it (JPA and the JDBC report use the same table)
