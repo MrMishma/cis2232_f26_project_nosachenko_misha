@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head">
+    <title id="pageTitle">Vinyl Listings</title>
+</head>
+<body>
+<nav th:replace="fragments/navHeader :: navbar"></nav>
+<div class="container my-4">
+    <h2 class="mb-3 text-center title">Vinyl Listings</h2>
+
+    <!-- Messages from the controller (used by delete later) -->
+    <h2 class="mb-3 text-center error" th:if="${not #strings.isEmpty(messageError)}" th:text="${messageError}">Error</h2>
+    <h2 class="mb-3 text-center success" th:if="${not #strings.isEmpty(messageSuccess)}" th:text="${messageSuccess}">Success</h2>
+
+    <div class="table-responsive">
+        <table id="theData" class="table table-striped table-hover align-middle">
+            <thead class="table-dark text-center">
+            <tr>
+                <th>ID</th>
+                <th>Record Name</th>
+                <th>Seller Name</th>
+                <th>Release Year</th>
+                <th>Genre</th>
+                <th>Colour</th>
+                <th>Size</th>
+                <th>Condition</th>
+                <th>Price</th>
+                <th>Created</th>
+                <th>Options</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="current : ${listings}">
+                <td th:text="${current.id}"></td>
+                <td th:text="${current.recordName}"></td>
+                <td th:text="${current.sellerName}"></td>
+                <td th:text="${current.releaseYear}"></td>
+                <td th:text="${current.vinylGenre}"></td>
+                <td th:text="${current.vinylColour}"></td>
+                <td th:text="${current.recordSize}"></td>
+                <td th:text="${current.vinylIsSealed} ? 'Sealed' : 'Used'"></td>
+                <td th:text="'$' + ${#numbers.formatDecimal(current.vinylPrice, 1, 2)}"></td>
+                <td th:text="${current.createdDateTime}"></td>
+                <td class="text-center">
+                    <div class="btn-group" role="group">
+                        <a th:href="@{/vinyllisting/edit/{id}(id=${current.id})}"
+                           class="btn btn-sm btn-outline-primary" title="Edit">
+                            <i class="accent fas fa-edit"></i>
+                        </a>
+                        <a th:href="@{/vinyllisting/delete/{id}(id=${current.id})}"
+                           class="btn btn-sm btn-outline-danger" title="Delete"
+                           onclick="return confirm('Delete this listing?')">
+                            <i class="accent fas fa-trash"></i>
+                        </a>
+                    </div>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(listings)}">
+                <td colspan="11" class="text-center text-muted py-4">No vinyl listings found.</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="text-center mt-3">
+        <a th:href="@{/vinyllisting/add}" class="accent accent-background btn btn-success">
+            <i class="fas fa-plus"></i> Add New Listing
+        </a>
+    </div>
+</div>
+<footer th:replace="fragments/footer :: footer"></footer>
+</body>
+</html>
