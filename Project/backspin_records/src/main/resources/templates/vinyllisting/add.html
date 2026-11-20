@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head">
+  <title id="pageTitle" th:text="#{label.add.edit}">Add/Edit</title>
+</head>
+<body>
+<nav th:replace="fragments/navHeader :: navbar"></nav>
+<div class="container has-text-centered">
+
+  <!-- Title changes depending on add (no id) or edit (has id) -->
+  <h2 class="title is-2" th:if="${vinylListing.id == null}" th:text="#{label.vinyl.add}">Add Vinyl Listing</h2>
+  <h2 class="title is-2" th:if="${vinylListing.id != null}" th:text="#{label.vinyl.edit}">Edit Vinyl Listing</h2>
+
+  <form th:action="@{/vinyllisting/submit}" th:object="${vinylListing}" method="post" class="wbb"
+        style="display:inline-block;text-align:left!important">
+
+    <!-- Hidden fields: keep the id (so save updates) and the original created date -->
+    <input type="hidden" th:field="*{id}"/>
+    <input type="hidden" th:field="*{createdDateTime}"/>
+
+    <div>
+      <label>Record Name:</label>
+      <input type="text" th:field="*{recordName}"/>
+    </div>
+    <p class="cd" th:if="${#fields.hasErrors('recordName')}" th:errors="*{recordName}"></p>
+
+    <div>
+      <label>Seller Name:</label>
+      <input type="text" th:field="*{sellerName}"/>
+    </div>
+    <p class="cd" th:if="${#fields.hasErrors('sellerName')}" th:errors="*{sellerName}"></p>
+
+    <div>
+      <label>Release Year:</label>
+      <input type="number" th:field="*{releaseYear}"/>
+    </div>
+    <p class="cd" th:if="${#fields.hasErrors('releaseYear')}" th:errors="*{releaseYear}"></p>
+
+    <div>
+      <label>Genre:</label>
+      <select th:field="*{vinylGenre}">
+        <option value="">-- Select --</option>
+        <option value="Country">Country</option>
+        <option value="Pop">Pop</option>
+        <option value="Rock">Rock</option>
+        <option value="Jazz">Jazz</option>
+        <option value="Electronic">Electronic</option>
+      </select>
+    </div>
+    <p class="cd" th:if="${#fields.hasErrors('vinylGenre')}" th:errors="*{vinylGenre}"></p>
+
+    <div>
+      <label>Colour:</label>
+      <select th:field="*{vinylColour}">
+        <option value="">-- Select --</option>
+        <option value="Black">Black</option>
+        <option value="Red">Red</option>
+        <option value="White">White</option>
+      </select>
+    </div>
+    <p class="cd" th:if="${#fields.hasErrors('vinylColour')}" th:errors="*{vinylColour}"></p>
+
+    <div>
+      <label>Size:</label>
+      <select th:field="*{recordSize}">
+        <option value="">-- Select --</option>
+        <option value="Seven-inch">Seven-inch</option>
+        <option value="Ten-inch">Ten-inch</option>
+        <option value="Twelve-inch">Twelve-inch</option>
+      </select>
+    </div>
+    <p class="cd" th:if="${#fields.hasErrors('recordSize')}" th:errors="*{recordSize}"></p>
+
+    <div>
+      <label>Condition:</label>
+      <input type="radio" th:field="*{vinylIsSealed}" value="true"/> Sealed (new)
+      <input type="radio" th:field="*{vinylIsSealed}" value="false"/> Used
+    </div>
+    <p class="cd" th:if="${#fields.hasErrors('vinylIsSealed')}" th:errors="*{vinylIsSealed}"></p>
+
+    <!-- Price is calculated on save, so it is only shown (not editable) -->
+    <p th:if="*{vinylPrice != null}">
+      Current price: <strong th:text="'$' + ${#numbers.formatDecimal(vinylListing.vinylPrice, 1, 2)}"></strong>
+      (recalculated when you submit)
+    </p>
+
+    <button style="display:block;margin-top:24px!important" class="centered" th:text="#{label.submit}">Submit</button>
+  </form>
+
+  <div class="text-center mt-3">
+    <a th:href="@{/vinyllisting}">Back to listings</a>
+  </div>
+</div>
+<footer th:replace="fragments/footer :: footer"></footer>
+</body>
+</html>
