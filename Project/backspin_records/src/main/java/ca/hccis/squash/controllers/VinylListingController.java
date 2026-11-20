@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
  * Controller for the vinyl listing CRUD pages.
@@ -42,5 +44,34 @@ public class VinylListingController {
         Iterable<VinylListing> listings = _vinylListingRepository.findAll();
         model.addAttribute("listings", listings);
         return "vinyllisting/list";
+    }
+    /**
+     * Delete a vinyl listing and return to the list.
+     *
+     * @param id                 ID of the listing to delete (from the URL)
+     * @param redirectAttributes used to pass a message to the list page
+     * @return redirect to the vinyl listing list
+     * @author Misha
+     * @since 20261120
+     */
+    @RequestMapping("/delete/{id}")
+    public String delete(@PathVariable int id, RedirectAttributes redirectAttributes) {
+
+        //Make sure the listing exists before trying to delete it
+        if (!_vinylListingRepository.existsById(id)) {
+            redirectAttributes.addFlashAttribute("messageError", "Listing " + id + " was not found");
+            return "redirect:/vinyllisting";
+        }
+
+        try {
+            _vinylListingRepository.deleteById(id);
+            logger.info("Deleted vinyl listing " + id);
+            redirectAttributes.addFlashAttribute("messageSuccess", "Listing " + id + " deleted");
+        } catch (Exception e) {
+            logger.error("Error deleting vinyl listing " + id + ": " + e);
+            redirectAttributes.addFlashAttribute("messageError", "Could not delete listing " + id);
+        }
+
+        return "redirect:/vinyllisting";
     }
 }
