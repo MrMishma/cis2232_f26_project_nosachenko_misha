@@ -1,6 +1,7 @@
 package ca.hccis.squash.jpa.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import java.util.Objects;
 
 /**
@@ -18,30 +19,46 @@ public class VinylListing {
     @Column(name = "id", nullable = false)
     private Integer id;
 
+    @NotBlank(message = "Record name is required")
+    @Size(max = 100, message = "Record name must be 100 characters or less")
     @Column(name = "recordName", nullable = false, length = 100)
     private String recordName;
 
+    @NotBlank(message = "Seller name is required")
+    @Size(max = 50, message = "Seller name must be 50 characters or less")
     @Column(name = "sellerName", nullable = false, length = 50)
     private String sellerName;
 
+    @NotNull(message = "Release year is required")
+    @Min(value = 1948, message = "Release year must be 1948 or later")
+    @Max(value = 2026, message = "Release year cannot be in the future")
     @Column(name = "releaseYear", nullable = false)
     private Integer releaseYear;
 
+    @NotBlank(message = "Genre is required")
+    @Pattern(regexp = "Country|Pop|Rock|Jazz|Electronic", message = "Genre must be Country, Pop, Rock, Jazz or Electronic")
     @Column(name = "vinylGenre", nullable = false, length = 20)
     private String vinylGenre;
 
+    @NotBlank(message = "Colour is required")
+    @Pattern(regexp = "Black|Red|White", message = "Colour must be Black, Red or White")
     @Column(name = "vinylColour", nullable = false, length = 10)
     private String vinylColour;
 
+    @NotBlank(message = "Size is required")
+    @Pattern(regexp = "Seven-inch|Ten-inch|Twelve-inch", message = "Size must be Seven-inch, Ten-inch or Twelve-inch")
     @Column(name = "recordSize", nullable = false, length = 15)
     private String recordSize;
 
+    @NotNull(message = "Condition (sealed or used) is required")
     @Column(name = "vinylIsSealed", nullable = false)
     private Boolean vinylIsSealed;
 
+    //No validation annotations: calculated in VinylListingBO after validation runs
     @Column(name = "vinylPrice", nullable = false)
     private Double vinylPrice;
 
+    //No validation annotations: set in the controller after validation runs
     @Column(name = "createdDateTime", nullable = false, length = 20)
     private String createdDateTime;
 
